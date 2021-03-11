@@ -88,7 +88,6 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from util import Stack
-    import time
 
     class Root :
         def __init__(self, position : tuple, path : list):
