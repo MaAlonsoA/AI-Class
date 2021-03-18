@@ -88,7 +88,7 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from util import Stack
-
+    
     class Root :
         def __init__(self, position : tuple, path : list):
             self.position = position
@@ -102,15 +102,14 @@ def depthFirstSearch(problem):
     rootsStack : Stack = Stack()
 
     initialRoot : Root = Root(problem.getStartState(), [])
-
     rootsStack.push(initialRoot)
     
     while True:
+
         currentNode = rootsStack.pop()
-        
+
         if problem.isGoalState(currentNode.getPosition()) :
             return currentNode.getPath()
-
         else :
             visited.add(currentNode.getPosition())
             successors = problem.getSuccessors(currentNode.getPosition())
@@ -118,11 +117,13 @@ def depthFirstSearch(problem):
                 nextNodePosition : tuple = nextNode[0] 
                 if nextNodePosition not in visited:
                     nextMove : string = nextNode[1]
-                    newPath : list = currentNode.getPath()
-                    newPath.append(nextMove)
-                    nextNode : Root = Root(nextNodePosition, newPath)
-                    rootsStack.push(nextNode)
 
+                    newPath = currentNode.getPath().copy()
+                    newPath.append(nextMove)
+                    nextNode : Root = Root(nextNodePosition, newPath )
+                    
+                    rootsStack.push(nextNode)
+                    
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
