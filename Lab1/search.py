@@ -104,7 +104,7 @@ def depthFirstSearch(problem):
     initialRoot : Root = Root(problem.getStartState(), [])
     rootsStack.push(initialRoot)
     
-    while True:
+    while not rootsStack.isEmpty():
 
         currentNode = rootsStack.pop()
 
@@ -116,13 +116,14 @@ def depthFirstSearch(problem):
             for nextNode in successors:
                 nextNodePosition : tuple = nextNode[0] 
                 if nextNodePosition not in visited:
-                    nextMove : string = nextNode[1]
+                    nextMove : str = nextNode[1]
 
                     newPath = currentNode.getPath().copy()
                     newPath.append(nextMove)
                     nextNode : Root = Root(nextNodePosition, newPath )
                     
                     rootsStack.push(nextNode)
+    return []
                     
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
