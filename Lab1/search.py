@@ -141,17 +141,30 @@ def breadthFirstSearch(problem):
     
     visited : set = set()
     rootsQueue : Queue = Queue()
-    rootsQueue.push(Root(problem.getStartState(), [])) #Set initial root
-    
-    while not rootsQueue.isEmpty() :
-        currentNode = rootsQueue.pop()
+    rootsQueue.push(Root(problem.getStartState(), [])) #Push initial root
 
+    while not rootsQueue.isEmpty() :
+
+        currentNode : Root = rootsQueue.pop()
+        
         if problem.isGoalState(currentNode.getPosition()) :
             return currentNode.getPath()
         else :
-            visited.add(currentNode)
-            successor : list = problem.getSuccessors(currentNode.getPosition())
-            print(successor)
+            visited.add(currentNode.getPosition())
+            successors = problem.getSuccessors(currentNode.getPosition())
+            for nextNode in successors:
+                nextNodePosition : tuple = nextNode[0] 
+                if nextNodePosition not in visited:
+                    visited.add(nextNodePosition)
+
+                    nextMove : str = nextNode[1]
+                    
+                    newPath : list = currentNode.getPath().copy()
+                    newPath.append(nextMove)
+                    nextNode : Root = Root(nextNodePosition, newPath )
+
+                    rootsQueue.push(nextNode)
+    return []
     
 
 def uniformCostSearch(problem):
