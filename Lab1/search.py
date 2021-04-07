@@ -170,45 +170,7 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    from util import PriorityQueue
-
-    class Root:
-        def __init__(self, position : tuple, path : list, cost : int) -> None:
-            self.position = position
-            self.path = path
-            self.cost = cost
-        def getPosition(self) -> tuple:
-            return self.position   
-        def getPath(self) -> list:
-            return self.path
-        def getCost(self) ->int:
-            return self.cost
-
-    visited : set = set()
-    rootsQueue : PriorityQueue = PriorityQueue()
-    rootsQueue.push(Root(problem.getStartState(), [], 0), 0) #Push initial root with priority 0
-    
-
-    while not rootsQueue.isEmpty() :
-
-        currentNode : Root = rootsQueue.pop()
-
-        if currentNode.getPosition() not in visited :
-            visited.add(currentNode.getPosition())
-            if problem.isGoalState(currentNode.getPosition()) :
-                return currentNode.getPath()
-            else :
-                successor : list = problem.getSuccessors(currentNode.getPosition())
-                for nextNode in successor:
-                    nextNodePosition = nextNode[0]
-                    if nextNodePosition not in visited:
-                        nextMove = nextNode[1]
-                        newPath : list = currentNode.getPath().copy()
-                        newPath.append(nextMove)
-                        nextCost = nextNode[2]
-                        newCost = currentNode.getCost() + nextCost
-                        rootsQueue.push(Root(nextNodePosition, newPath, newCost), newCost)
-    return []
+    util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
