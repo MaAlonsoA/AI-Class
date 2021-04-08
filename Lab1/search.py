@@ -220,7 +220,46 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    class Root:
+        def __init__(self, position : tuple, path : list, cost : int) -> None:
+            self.position = position
+            self.path = path
+            self.cost = cost
+        def getPosition(self) -> tuple:
+            return self.position
+        def getPath(self) -> list:
+            return self.path
+        def getCost(self) -> int:
+            return self.cost
+    
+    visited : set = set()
+    rootsQueue : PriorityQueue = PriorityQueue()
+
+    rootsQueue.push(Root(problem.getStartState(), [], 0), 0) #Push the initial root
+
+    while not rootsQueue.isEmpty() :
+        currentNode : Root = rootsQueue.pop()
+
+        if problem.isGoalState(currentNode.getPosition()):
+            return currentNode.getPath().copy()
+
+        if currentNode.getPosition() not in visited :
+            visited.add(currentNode.getPosition())
+            successors : list = problem.getSuccessors(currentNode.getPosition())
+            for nextNode in successors:
+                nextNodePostition : tuple = nextNode[0]
+                if nextNodePostition not in visited:
+                    nextMove : str = nextNode[1]
+                    newPath : list = currentNode.getPath().copy()
+                    newPath.append(nextMove)
+                    newCost : int = problem.getCostOfActions(newPath) + heuristic(nextNodePostition, problem)
+                    if nextNodePostition not in visited :
+                        rootsQueue.push(Root(nextNodePostition, newPath, newCost), newCost)  
+                                             
+    return []
+
 
 
 # Abbreviations
