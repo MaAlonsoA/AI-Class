@@ -403,7 +403,25 @@ def cornersHeuristic(state, problem):
     walls = problem.walls
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    def distance(x: int, y: int, obejetive: tuple) -> int:
+        # Manhattan distance
+        return abs(x - obejetive[0]) + abs(y - obejetive[1])
+
+    x: int = state[0][0]
+    y: int = state[0][1]
+    goals = list(state[1])
+    heuristic = 0
+    while goals:
+        distanceToGoal = 0
+        for i in range(0, len(goals)):
+            if distance(x, y, goals[i]) < distanceToGoal or i == 0:
+                closestGoal = goals[i]
+                distanceToGoal = distance(x, y, goals[i])
+        goals.remove(closestGoal)
+        x = closestGoal[0]
+        y = closestGoal[1]
+        heuristic += distanceToGoal
+    return heuristic
 
 
 class AStarCornersAgent(SearchAgent):
