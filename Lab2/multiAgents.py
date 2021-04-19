@@ -12,6 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
+from sys import maxsize
 from util import manhattanDistance
 from game import Directions
 import random
@@ -70,16 +71,37 @@ class ReflexAgent(Agent):
         Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
         """
+        import pacman
+        import game
+        import sys
         # Useful information you can extract from a GameState (pacman.py)
-        successorGameState = currentGameState.generatePacmanSuccessor(action)
+        successorGameState: pacman.gameState = currentGameState.generatePacmanSuccessor(
+            action)
         newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [
-            ghostState.scaredTimer for ghostState in newGhostStates]
+        newFood: game.Grid = successorGameState.getFood()
+        newGhostStates: list = successorGameState.getGhostStates()
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        if action == "Stop":
+            return -sys.maxsize - 1
+
+        result: int = 0
+        goals: list = newFood.asList()
+        if not goals:
+            return sys.maxsize * 2 + 1
+
+        distancesToGoals: list = list(
+            manhattanDistance(goal, newPos) for goal in goals)
+        distancesToGoals.sort(reverse=False)
+
+        distancesToGhosts: list = list(manhattanDistance(
+            ghost.getPosition(), newPos) for ghost in newGhostStates)
+        distancesToGhosts.sort(reverse=False)
+
+        result += 1/distancesToGoals[0] * distancesToGhosts[0]
+        result += successorGameState.getScore()
+
+        return result
 
 
 def scoreEvaluationFunction(currentGameState):
