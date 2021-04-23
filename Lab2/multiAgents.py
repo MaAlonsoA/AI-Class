@@ -216,7 +216,61 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def maxValue(state, depth: int, alpha: int, beta: int):
+            depth += 1
+            if state.isWin() or state.isLose() or depth == self.depth:
+                return self.evaluationFunction(state)
+            else:
+                value: int = -sys.maxsize - 1
+                legalActions: list = state.getLegalActions(0)
+                for action in legalActions:
+                    value = max(value, minValue(
+                        state.generateSuccessor(0, action), 1, depth, alpha, beta))
+                    if beta <= value:
+                        return value
+                    alpha = max(alpha,value)
+            return value
+
+        def minValue(state, ghostIndex: int, depth: int, alpha: int, beta: int):
+            if state.isWin() or state.isLose() or depth == self.depth:
+                return self.evaluationFunction(state)
+
+            value: int = sys.maxsize * 2 + 1
+            legalActions: list = state.getLegalActions(ghostIndex)
+            for action in legalActions:
+                if ghostIndex == state.getNumAgents() - 1:
+                    value = min(value, maxValue(
+                            state.generateSuccessor(ghostIndex, action), depth, alpha, beta))
+                    if alpha > value:
+                        return value
+                    beta = min (beta, value)
+                else:
+                    for action in legalActions:
+                        value = min(value, minValue(state.generateSuccessor(
+                            ghostIndex, action), ghostIndex + 1, depth, alpha, beta))
+                        if alpha >= value:
+                            return value
+                        beta = min (beta, value)
+            return value
+
+        
+        value: int = -sys.maxsize - 1
+        alpha: int = -sys.maxsize - 1
+        beta: int = sys.maxsize*2+1
+        move: str = Directions.STOP
+        pacManMoves: list = gameState.getLegalActions(0)
+        for currentMove in pacManMoves:
+            currentValue = minValue(
+                gameState.generateSuccessor(0, currentMove), 1, 0, alpha, beta)
+            if currentValue >= value:
+                value = currentValue
+                move = currentMove
+            if currentValue >= beta:
+                return move
+            alpha = max(alpha, value)
+        return move
+
+        
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
