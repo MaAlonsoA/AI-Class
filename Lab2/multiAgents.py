@@ -234,33 +234,40 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         def minValue(state, ghostIndex: int, depth: int, alpha: int, beta: int):
             if state.isWin() or state.isLose() or depth == self.depth:
                 return self.evaluationFunction(state)
-            else:
-                value: int = sys.maxsize * 2 + 1
-                legalActions: list = state.getLegalActions(ghostIndex)
+
+            value: int = sys.maxsize * 2 + 1
+            legalActions: list = state.getLegalActions(ghostIndex)
+            for action in legalActions:
                 if ghostIndex == state.getNumAgents() - 1:
-                    for action in legalActions:
-                        value = min(value, maxValue(
+                    value = min(value, maxValue(
                             state.generateSuccessor(ghostIndex, action), depth, alpha, beta))
+                    if alpha > value:
+                        return value
+                    beta = min (beta, value)
                 else:
                     for action in legalActions:
                         value = min(value, minValue(state.generateSuccessor(
                             ghostIndex, action), ghostIndex + 1, depth, alpha, beta))
-                if alpha >= value:
-                    return value
-                beta = min (beta, value)
+                        if alpha >= value:
+                            return value
+                        beta = min (beta, value)
             return value
 
-        pacManMoves: list = gameState.getLegalActions(0)
+        
         value: int = -sys.maxsize - 1
         alpha: int = -sys.maxsize - 1
         beta: int = sys.maxsize*2+1
         move: str = Directions.STOP
+        pacManMoves: list = gameState.getLegalActions(0)
         for currentMove in pacManMoves:
             currentValue = minValue(
                 gameState.generateSuccessor(0, currentMove), 1, 0, alpha, beta)
-            if (currentValue > value):
+            if currentValue >= value:
                 value = currentValue
                 move = currentMove
+            if currentValue >= beta:
+                return move
+            alpha = max(alpha, value)
         return move
 
         
