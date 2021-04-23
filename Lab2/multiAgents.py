@@ -13,6 +13,7 @@
 
 
 from sys import maxsize
+import sys
 from util import manhattanDistance
 from game import Directions
 import random
@@ -165,7 +166,44 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def maxValue(state, depth: int):
+            depth += 1
+            if state.isWin() or state.isLose() or depth == self.depth:
+                return self.evaluationFunction(state)
+            else:
+                value: int = -sys.maxsize - 1
+                legalActions: list = state.getLegalActions(0)
+                for action in legalActions:
+                    value = max(value, minValue(
+                        state.generateSuccessor(0, action), 1, depth))
+                return value
+
+        def minValue(state, ghostIndex: int, depth: int):
+            if state.isWin() or state.isLose():
+                return self.evaluationFunction(state)
+            else:
+                value: int = sys.maxsize * 2 + 1
+                legalActions: list = state.getLegalActions(ghostIndex)
+                if ghostIndex == state.getNumAgents() - 1:
+                    for action in legalActions:
+                        value = min(value, maxValue(
+                            state.generateSuccessor(ghostIndex, action), depth))
+                else:
+                    for action in legalActions:
+                        value = min(value, minValue(state.generateSuccessor(
+                            ghostIndex, action), ghostIndex + 1, depth))
+            return value
+
+        pacManMoves: list = gameState.getLegalActions(0)
+        value: int = -sys.maxsize - 1
+        move: str = Directions.STOP
+        for currentMove in pacManMoves:
+            currentValue = minValue(
+                gameState.generateSuccessor(0, currentMove), 1, 0)
+            if (currentValue > value):
+                value = currentValue
+                move = currentMove
+        return move
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
