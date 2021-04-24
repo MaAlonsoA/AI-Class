@@ -78,7 +78,7 @@ class ReflexAgent(Agent):
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState: pacman.gameState = currentGameState.generatePacmanSuccessor(
             action)
-        newPos = successorGameState.getPacmanPosition()
+        newPos: tuple = successorGameState.getPacmanPosition()
         newFood: game.Grid = successorGameState.getFood()
         newGhostStates: list = successorGameState.getGhostStates()
 
@@ -170,28 +170,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
             depth += 1
             if state.isWin() or state.isLose() or depth == self.depth:
                 return self.evaluationFunction(state)
-            else:
-                value: int = -sys.maxsize - 1
-                legalActions: list = state.getLegalActions(0)
-                for action in legalActions:
-                    value = max(value, minValue(
-                        state.generateSuccessor(0, action), 1, depth))
-                return value
+
+            value: int = -sys.maxsize - 1
+            legalActions: list = state.getLegalActions(0)
+            for action in legalActions:
+                value = max(value, minValue(
+                    state.generateSuccessor(0, action), 1, depth))
+            return value
 
         def minValue(state, ghostIndex: int, depth: int):
             if state.isWin() or state.isLose():
                 return self.evaluationFunction(state)
-            else:
-                value: int = sys.maxsize * 2 + 1
-                legalActions: list = state.getLegalActions(ghostIndex)
+
+            value: int = sys.maxsize * 2 + 1
+            legalActions: list = state.getLegalActions(ghostIndex)
+
+            for action in legalActions:
                 if ghostIndex == state.getNumAgents() - 1:
-                    for action in legalActions:
-                        value = min(value, maxValue(
-                            state.generateSuccessor(ghostIndex, action), depth))
+                    value = min(value, maxValue(
+                        state.generateSuccessor(ghostIndex, action), depth))
                 else:
-                    for action in legalActions:
-                        value = min(value, minValue(state.generateSuccessor(
-                            ghostIndex, action), ghostIndex + 1, depth))
+                    value = min(value, minValue(state.generateSuccessor(
+                        ghostIndex, action), ghostIndex + 1, depth))
             return value
 
         pacManMoves: list = gameState.getLegalActions(0)
@@ -255,7 +255,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         value: int = -sys.maxsize - 1
         alpha: int = -sys.maxsize - 1
-        beta: int = sys.maxsize*2+1
+        beta: int = sys.maxsize * 2 + 1
         move: str = 'Directions.STOP'
         pacManMoves: list = gameState.getLegalActions(0)
         for currentMove in pacManMoves:
@@ -288,7 +288,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
             if state.isWin() or state.isLose() or depth == self.depth:
                 return self.evaluationFunction(state)
-            
+
             value: int = -sys.maxsize - 1
             legalActions: list = state.getLegalActions(0)
             for action in legalActions:
@@ -341,22 +341,27 @@ def betterEvaluationFunction(currentGameState):
     "*** YOUR CODE HERE ***"
     newPos: tuple = currentGameState.getPacmanPosition()
     goals: list = currentGameState.getFood().asList()
-    newScaredTimes: list = list (ghost.scaredTimer for ghost in currentGameState.getGhostStates())
+    newScaredTimes: list = list(
+        ghost.scaredTimer for ghost in currentGameState.getGhostStates())
     if not goals:
         return sys.maxsize * 2 + 1
 
-    distancesToGoals: list = list(manhattanDistance(food, newPos) for food in goals)
-    distancesToGhosts: list = list(manhattanDistance(ghost.getPosition(), newPos) for ghost in currentGameState.getGhostStates())
-    
-    
+    distancesToGoals: list = list(
+        manhattanDistance(food, newPos) for food in goals)
+    distancesToGhosts: list = list(manhattanDistance(
+        ghost.getPosition(), newPos) for ghost in currentGameState.getGhostStates())
+
     result: float = 1 / sum(distancesToGoals) - sum(distancesToGhosts)
     result += currentGameState.getScore()
 
-    distancesToCapsules: list = list(manhattanDistance(capsule,newPos) for capsule in currentGameState.getCapsules())
+    distancesToCapsules: list = list(manhattanDistance(
+        capsule, newPos) for capsule in currentGameState.getCapsules())
     if sum(newScaredTimes) > 0:
-        result += sum(newScaredTimes) - sum(distancesToCapsules) - sum(distancesToGhosts)
-    
+        result += sum(newScaredTimes) - \
+            sum(distancesToCapsules) - sum(distancesToGhosts)
+
     return result
+
 
 # Abbreviation
 better = betterEvaluationFunction
